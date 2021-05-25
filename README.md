@@ -15,7 +15,7 @@ numpy:1.18.5<br>
 pandas:1.0.5<br>
 
 ## Train and Test
-
+This part will show how to generate adversarial examples and how to conduct the masked training.
 ### adversarial examples generation
-
-### adversarial training
+1.
+### masked training
