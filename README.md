@@ -24,19 +24,19 @@ This part will show how to generate adversarial examples and how to conduct the 
 
 0. First of all, for adversarial example generation, you need to train the original model first. You can refer to the oirginal work for detailed details(I will introduce GNN separately):
 
-[Transormer and Lstm model](https://github.com/wasiahmad/NeuralCodeSum)       and      [CSCGDual model](https://github.com/Bolin0215/CSCGDual)
+[Transormer and Lstm model](https://github.com/wasiahmad/NeuralCodeSum)       and      [CSCGDual model](https://github.com/Bolin0215/CSCGDual)  and [Rencos](https://github.com/zhangj111/rencos)
 
 #### GNN
 cd gnn
 
-config.py is the configuration file and you can should the path in this file.
+config.py is the configuration file and you should change the corresponding path in this file.
 
 run python3 main.py to train GNN model.
 
 
 ### adversarial examples generation
 
-The adversarial example generation dir contains the four different models to generate adversarial examples.
+The adversarial example generation dir contains the five different models to generate adversarial examples.
 
 #### Transformer and lstm model 
 
@@ -79,7 +79,7 @@ note: Don't forget to change the path, or you may meet an error!
   
   and finally, run python3 fool.py to generate adversarial exmaples.
 
-note: for CSCGDual and GNN, the steps are the same, you just need to change the corresponding path.
+note: for rencos, CSCGDual and GNN, the steps are the same, you just need to change the corresponding path and dir.
 
 ### masked training
 
@@ -89,3 +89,5 @@ The relevant files are all in the masking training directory.
 2. change this "  var_everyCode_path='../var_for_everyCode.pkl' (in adversary.py)"  file with generated file in the previous step.
 3. train the masked model as same process as the pre-training  stag.
 
+
+### The dataset information for static study is in data/staticIndex.txt
