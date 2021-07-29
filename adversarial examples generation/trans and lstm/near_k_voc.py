@@ -4,8 +4,8 @@ from gensim.models.word2vec import Word2Vec
 import random
 import os
 from sklearn.metrics.pairwise import cosine_similarity
-
-k=8
+root='./attacker'
+k=5
 def get_topk_index(k,arr):
     top_k=k
     array=arr
@@ -14,8 +14,8 @@ def get_topk_index(k,arr):
 
 
 print('read embedding....')
-root = ''
-word2vec = Word2Vec.load('/embedding/python/node_w2v_64').wv
+
+word2vec = Word2Vec.load(root+'/embedding/train/java/node_w2v_64').wv
 vocab=word2vec.vocab
 max_token=word2vec.syn0.shape[0]
 embedding_dim=word2vec.syn0.shape[1]
@@ -24,7 +24,7 @@ embeddings[:max_token]=word2vec.syn0
 print('end read embedding..')
 
 print('read all var and extract embedding..')
-data_all_var=pd.read_pickle('data/python/var_for_allCode_train.pkl')  # not change
+data_all_var=pd.read_pickle(root+'/var_name/train/java/var_for_allCode.pkl')
 all_var_list=list(data_all_var['all vars'].tolist()[0])
 max_var=len(all_var_list)
 embeddings_allvar=np.zeros((max_var,embedding_dim))
@@ -40,57 +40,65 @@ for i in range(max_var):
 print('read and extract end')
 
 print('read every var and formalparameter for every code')
-data_every_var=pd.read_pickle('data/python/var_for_everyCode_test.pkl')
+data_every_var=pd.read_pickle(root+'/var_name/java/code_var_for_everyCode.pkl')
 every_var_list=data_every_var['variable'].tolist()
 
 #formalParameter
 formalParameter_for_every_code=pd.read_pickle\
-    ('data/python/formalParameter_for_everyCode_test.pkl')
+    (root+'/var_name/java/code_test_formalParameter_for_everyCode.pkl')
 formalParameter_list=formalParameter_for_every_code['variable'].tolist()
 
-#select top k var expect for self code
+
 
 print('select top k nearest var')
 nearest_list=[]
 var_embed=np.zeros((1,embedding_dim))
 count=0
 
-print('random select k var')
-count=0
-for every_code in every_var_list:  #for every code
+
+for every_code in every_var_list:  
     nearest_dict={}
     mask_index_list=[]
     formalParameter_every_code =formalParameter_list[count]
-
+    count=count+1
+    print('ok'+str(count))
     for var in every_code:
         if var in all_var_list:
             var_index_in_all_var=all_var_list.index(var)
             mask_index_list.append(var_index_in_all_var)
 
-    #jia shang dui formalParameter de chu li
+
     if formalParameter_every_code!=[]:
         for item in formalParameter_every_code:
             if item in all_var_list:
                 mask_index_list.append(all_var_list.index(item))
+    
+    allcan_list=[]
+    for var in every_code: 
+        n_list = []  
+        var_index=vocab[var].index if var in vocab else max_token
+        var_embed[0]=embeddings[var_index]
+        cos_dist=cosine_similarity(embeddings_allvar,var_embed) 
+        for item in mask_index_list:
+            cos_dist[item][0]=-1  
 
-    for var in every_code: #for every var of every code
-        n_list = []
-        i=0
-        while i<k:
-            random_index = random.sample(range(0, max_var), 1)
-            if random_index[0] in mask_index_list:
-                continue
-            else:
-                n_list.append(all_var_list[random_index[0]])
-                i=i+1
+        cos_dist=cos_dist.reshape(max_var)  
+       
+        k_count=2
+        while len(n_list)<k:
+            top_k_index=get_topk_index(k_count,cos_dist)
+            if (all_var_list[top_k_index[-1]] in allcan_list) ==False:
+                n_list.append(all_var_list[top_k_index[-1]])
+                allcan_list.append(all_var_list[top_k_index[-1]])
+               
+            k_count=k_count+1
+       
         nearest_dict[var]=n_list
     nearest_list.append(nearest_dict)
-    count=count+1
-    print('ok'+str(count))
+   
 
 
 index=[i for i in range(len(nearest_list))]
 nearest_pd=pd.DataFrame({'id':index,'nearest_k':nearest_list})
-nearest_pd.to_pickle('/data/python/nearest_k_for_everyVar_test.pkl')
+nearest_pd.to_pickle('./attacker/var_name/java/code_nearest_top5.pkl')
 print('end')
-
