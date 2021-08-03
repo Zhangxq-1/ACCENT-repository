@@ -79,7 +79,12 @@ note: Don't forget to change the path, or you may meet an error!
   
   and finally, run python3 fool.py to generate adversarial exmaples.
 
-note: for rencos, CSCGDual and GNN, the steps are the same, you just need to change the corresponding path and dir.
+note: (1)for rencos, CSCGDual and GNN, the steps are the same, you just need to change the corresponding path and dir.
+(2)the gnn model needs additional pre-process file such as the adjacency matrix of the edges in the graph and ast token file, due to file size is too large(over 20G), I didn't upload it to the Github repository， if you need, please contact me. 
+
+Other required files can be generated according to the provided code. Please pay attention to the path problem. I will also maintain the repository later for better use.
+
+
 
 ### masked training
 
